@@ -21,7 +21,6 @@ function Collection() {
         .then(toJson).then(json => {
             setMaxPages(Math.ceil(parseInt(json.total_photos) / 21));
             loadNext();
-            console.log(maxPages)
         });
     }, [])
 
@@ -53,7 +52,6 @@ function Collection() {
             loadNext();
         }
     }
-    console.log({maxPages, currentPage})
 
     return (
         <div onScroll={onScroll} className={classes.Collection}>
@@ -74,7 +72,7 @@ function Collection() {
                     <img key={index} src={photo.urls.regular} alt={photo.description} />
                 )}
             </div>
-            {loading ? <div className={classes.spinner}/> : null}
+            {loading ? <div className={classes.loader}/> : null}
             {currentPage > maxPages ? 
                 <div className={classes.end}>
                     No more photos to show for this collection <br/>
