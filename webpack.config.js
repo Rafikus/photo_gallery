@@ -1,4 +1,5 @@
 const path = require('path');
+const DotenvWebpackPlugin = require('dotenv-webpack');
 
 module.exports = {
     entry: path.resolve(__dirname, './src/index.js'),
@@ -42,5 +43,8 @@ module.exports = {
     devServer: {
         contentBase: path.resolve(__dirname, './dist'),
         historyApiFallback: true,
-    }
+    },
+    plugins: [
+        new DotenvWebpackPlugin()
+    ]
 };
