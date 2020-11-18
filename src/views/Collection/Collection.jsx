@@ -4,6 +4,7 @@ import unsplashApi, { getTopic, getTopicsPhotos } from '../../api/unsplashApi'
 import { toJson } from 'unsplash-js'
 
 import classes from './Collection.module.scss';
+import CollectionPhoto from './CollectionPhoto/CollectionPhoto';
 
 let maxPages = 1;
 
@@ -18,18 +19,18 @@ function Collection() {
 
     useEffect(() => {
         getTopic(id)
-        .then(toJson).then(json => {
-            setMaxPages(Math.ceil(parseInt(json.data.total_photos) / 21));
-            loadNext();
-        });
+            .then(toJson).then(json => {
+                setMaxPages(Math.ceil(parseInt(json.data.total_photos) / 21));
+                loadNext();
+            });
     }, [])
 
     const loadNext = () => {
-        if(currentPage <= maxPages){
+        if (currentPage <= maxPages) {
             setLoading(true);
-            getTopicsPhotos(id, currentPage, 21, 'latest')
+            getTopicsPhotos(id, currentPage, 21, 'popular')
                 .then(toJson)
-                .then(({data}) => {
+                .then(({ data }) => {
                     setFirstColumn([...firstColumn, ...data.filter((_, index) => index % 3 === 0)])
                     setSecondColumn([...secondColumn, ...data.filter((_, index) => index % 3 === 1)])
                     setThirdColumn([...thirdColumn, ...data.filter((_, index) => index % 3 === 2)])
@@ -41,7 +42,7 @@ function Collection() {
                 });
         }
     }
-    console.log({loading})
+    console.log({ loading })
 
     const onScroll = (event) => {
         const totalHeight = event.target.scrollHeight - window.innerHeight;
@@ -55,29 +56,37 @@ function Collection() {
 
     return (
         <div onScroll={onScroll} className={classes.Collection}>
-            
             <div className={classes.column}>
                 {firstColumn.map((photo, index) =>
-                    <img key={index} src={photo.urls.regular} alt={photo.description} />
+                    <CollectionPhoto
+                        key={index}
+                        photo={photo}
+                    />
                 )}
             </div>
             <div className={classes.column}>
                 {secondColumn.map((photo, index) =>
-                    <img key={index} src={photo.urls.regular} alt={photo.description} />
+                    <CollectionPhoto
+                        key={index}
+                        photo={photo}
+                    />
                 )}
-                
+
             </div>
             <div className={classes.column}>
                 {thirdColumn.map((photo, index) =>
-                    <img key={index} src={photo.urls.regular} alt={photo.description} />
+                    <CollectionPhoto
+                        key={index}
+                        photo={photo}
+                    />
                 )}
             </div>
-            {loading ? <div className={classes.loader}/> : null}
-            {currentPage > maxPages ? 
+            {loading ? <div className={classes.loader} /> : null}
+            {currentPage > maxPages ?
                 <div className={classes.end}>
-                    No more photos to show for this collection <br/>
+                    No more photos to show for this collection <br />
                     <Link to="/">See other collections</Link>
-                </div> 
+                </div>
                 : null}
         </div>
     )
