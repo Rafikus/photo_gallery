@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom';
-import unsplashApi from '../../api/unsplashApi'
+import unsplashApi, { getTopic, getTopicsPhotos } from '../../api/unsplashApi'
 import { toJson } from 'unsplash-js'
 
 import classes from './Collection.module.scss';
@@ -17,9 +17,9 @@ function Collection() {
     const [maxPages, setMaxPages] = useState(1)
 
     useEffect(() => {
-        unsplashApi.collections.getCollection(id)
+        getTopic(id)
         .then(toJson).then(json => {
-            setMaxPages(Math.ceil(parseInt(json.total_photos) / 21));
+            setMaxPages(Math.ceil(parseInt(json.data.total_photos) / 21));
             loadNext();
         });
     }, [])
@@ -27,12 +27,12 @@ function Collection() {
     const loadNext = () => {
         if(currentPage <= maxPages){
             setLoading(true);
-            unsplashApi.collections.getCollectionPhotos(id, currentPage, 21, 'latest')
+            getTopicsPhotos(id, currentPage, 21, 'latest')
                 .then(toJson)
-                .then(json => {
-                    setFirstColumn([...firstColumn, ...json.filter((_, index) => index % 3 === 0)])
-                    setSecondColumn([...secondColumn, ...json.filter((_, index) => index % 3 === 1)])
-                    setThirdColumn([...thirdColumn, ...json.filter((_, index) => index % 3 === 2)])
+                .then(({data}) => {
+                    setFirstColumn([...firstColumn, ...data.filter((_, index) => index % 3 === 0)])
+                    setSecondColumn([...secondColumn, ...data.filter((_, index) => index % 3 === 1)])
+                    setThirdColumn([...thirdColumn, ...data.filter((_, index) => index % 3 === 2)])
                     setCurrentPage(currentPage + 1)
                     setLoading(false);
                 }).catch((err) => {

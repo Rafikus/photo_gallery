@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import unsplashApi from '../../../api/unsplashApi'
+import unsplashApi, { getTopicsPhotos } from '../../../api/unsplashApi'
 import { toJson } from 'unsplash-js'
 
 import classes from '../CollectionList.module.scss'
@@ -8,14 +8,15 @@ import { useHistory } from 'react-router-dom'
 function CollectionListItem(props) {
     const { id, title } = props
     const [photos, setPhotos] = useState([])
+    const [loading, setLoading] = useState(true)
     const history = useHistory();
 
     useEffect(() => {
-        unsplashApi.collections.getCollectionPhotos(id, 1, 10, 'latest', {orientation: "landscape"})
+        getTopicsPhotos(id, 1, 10, 'latest', 'landscape')
             .then(toJson)
             .then(json => {
-                console.log(json)
-                setPhotos(json);
+                setPhotos(json.data);
+                setLoading(false)
             });
     }, [])
 
@@ -30,8 +31,9 @@ function CollectionListItem(props) {
             </div>
             <div className={classes.photos}>
                 {photos.map((photo, index) =>
-                    <img key={index} src={photo.urls.thumb} alt={photo.description}/>
+                    <img key={index} src={photo.urls.thumb} alt={photo.description} />
                 )}
+                {loading ? <div className={classes.loader} /> : null}
             </div>
         </div>
     )
