@@ -4,6 +4,12 @@
   gap: 10px;
   height: 99vh;
   overflow-y: auto;
+
+  .options {
+    grid-column: 1/4;
+    
+  }
+
   .column {
     display: flex;
     flex-direction: column;

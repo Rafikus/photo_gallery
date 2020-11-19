@@ -6,8 +6,6 @@ import { toJson } from 'unsplash-js'
 import classes from './Collection.module.scss';
 import CollectionPhoto from './CollectionPhoto/CollectionPhoto';
 
-let maxPages = 1;
-
 function Collection() {
     const { id } = useParams();
     const [firstColumn, setFirstColumn] = useState([]);
@@ -21,14 +19,14 @@ function Collection() {
         getTopic(id)
             .then(toJson).then(json => {
                 setMaxPages(Math.ceil(parseInt(json.data.total_photos) / 21));
-                loadNext();
+                loadNext('latest');
             });
     }, [])
 
-    const loadNext = () => {
+    const loadNext = (sortBy) => {
         if (currentPage <= maxPages) {
             setLoading(true);
-            getTopicsPhotos(id, currentPage, 21, 'popular')
+            getTopicsPhotos(id, currentPage, 21, sortBy)
                 .then(toJson)
                 .then(({ data }) => {
                     setFirstColumn([...firstColumn, ...data.filter((_, index) => index % 3 === 0)])
@@ -42,7 +40,18 @@ function Collection() {
                 });
         }
     }
-    console.log({ loading })
+
+    const resetData = (sortBy) => {
+        setFirstColumn([]);
+        setSecondColumn([]);
+        setThirdColumn([]);
+        setCurrentPage(1);
+        loadNext(sortBy);
+    }
+
+    const onSortChange = (event) => {
+        resetData(event.target.value);
+    }
 
     const onScroll = (event) => {
         const totalHeight = event.target.scrollHeight - window.innerHeight;
@@ -56,6 +65,13 @@ function Collection() {
 
     return (
         <div onScroll={onScroll} className={classes.Collection}>
+            <div className={classes.options}>
+                Sort by 
+                <select onChange={onSortChange}>
+                    <option defaultChecked value="latest">latest</option>
+                    <option value="popular">popular</option>
+                </select>
+            </div>
             <div className={classes.column}>
                 {firstColumn.map((photo, index) =>
                     <CollectionPhoto
