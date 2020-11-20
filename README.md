@@ -16,6 +16,7 @@ To start the server you need to make `.env` file with parameters from Unsplash A
 ```env
 API_ACCESS=your_access_key
 API_SECRET=your_secret
+HOST_URL=www.your_domain.com
 ```
 
 After making this file and downloading packages you can start server with `npm start`.
