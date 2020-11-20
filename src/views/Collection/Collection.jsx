@@ -14,6 +14,7 @@ function Collection() {
     const [loading, setLoading] = useState(true)
     const [currentPage, setCurrentPage] = useState(1)
     const [maxPages, setMaxPages] = useState(1)
+    const [sortBy, setSortBy] = useState('latest')
 
     useEffect(() => {
         getTopic(id)
@@ -23,10 +24,10 @@ function Collection() {
             });
     }, [])
 
-    const loadNext = (sortBy) => {
+    const loadNext = (sort) => {
         if (currentPage <= maxPages) {
             setLoading(true);
-            getTopicsPhotos(id, currentPage, 21, sortBy)
+            getTopicsPhotos(id, currentPage, 21, sort || sortBy )
                 .then(toJson)
                 .then(({ data }) => {
                     setFirstColumn([...firstColumn, ...data.filter((_, index) => index % 3 === 0)])
@@ -42,6 +43,7 @@ function Collection() {
     }
 
     const resetData = (sortBy) => {
+        setSortBy(sortBy)
         setFirstColumn([]);
         setSecondColumn([]);
         setThirdColumn([]);

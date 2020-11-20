@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { toJson } from 'unsplash-js';
 import unsplash from '../../api/unsplashApi';
 import { Chart } from "react-google-charts";
 import classes from './Photo.module.scss'
 
 function Photo() {
+    const history = useHistory();    
     const { id } = useParams();
     const [photo, setPhoto] = useState(null);
     const [stats, setStats] = useState(null);
+    const [photoRatio, setPhotoRatio] = useState(-1);
+    const [ref, setRef] = useState(null);
+    const [orientationStyle, setOrientationStyle] = useState(classes.width);
 
-    const chartOptions = {
-        theme: "dark2", // "light1", "light2", "dark1", "dark2"
-        animationEnabled: true,
-        backgroundColor: "#565656",
-        height: 100,
+    const photoUrl = `http://${process.env.HOST_URL}${history.location.pathname}`;
 
-
-    }
 
     useEffect(() => {
         unsplash.photos.getPhoto(id).then(toJson).then(json => {
@@ -26,14 +24,30 @@ function Photo() {
         unsplash.photos.getPhotoStats(id).then(toJson).then(json => {
             setStats(json)
         });
+        console.log(photo)
     }, [])
+
+    const observer = new ResizeObserver(_ => {getImageClass()})
+
+    const getImageClass = (() => {
+        if( photo >= 0 ) setPhotoRatio(photo.height / photo.width)
+        if (window.innerHeight / window.innerWidth > (photoRatio >= 0 ? photoRatio : photo.height / photo.width)) {
+            setOrientationStyle(classes.width)
+        } else {
+            setOrientationStyle(classes.height)
+        }
+    }).bind(this)
+
+    ref && observer.observe(ref);
+
     if (photo == null || stats == null) {
         return <div className={classes.loader} />
     }
+
     return (
-        <div className={classes.Photo}>
+        <div ref={setRef} className={classes.Photo}>
             <div className={classes.image}>
-                <img src={photo.urls.full} alt="" />
+                <img className={orientationStyle} src={photo.urls.full} alt="" />
             </div>
             <div className={classes.description}>
                 <div className={classes.descriptionBubble}>
@@ -90,6 +104,10 @@ function Photo() {
                     Tags: {
                         photo.tags.map((tag, index) => <div key={index}>{tag.title}</div>)
                     }
+                </div>
+                <div className={[classes.descriptionBubble, classes.fbStuff].join(' ')}>
+                    <div className="fb-like" data-href={photoUrl} data-width="" data-layout="button" data-action="like" data-size="large" data-share="false"></div>
+                    <div className="fb-share-button" href={photoUrl} data-layout="button" data-size="large"><a target="_blank" href={photoUrl} className="fb-xfbml-parse-ignore">Share</a></div>
                 </div>
             </div>
         </div>
