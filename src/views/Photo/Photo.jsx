@@ -6,7 +6,7 @@ import { Chart } from "react-google-charts";
 import classes from './Photo.module.scss'
 
 function Photo() {
-    const history = useHistory();    
+    const history = useHistory();
     const { id } = useParams();
     const [photo, setPhoto] = useState(null);
     const [stats, setStats] = useState(null);
@@ -27,10 +27,10 @@ function Photo() {
         console.log(photo)
     }, [])
 
-    const observer = new ResizeObserver(_ => {getImageClass()})
+    const observer = new ResizeObserver(_ => { getImageClass() })
 
     const getImageClass = (() => {
-        if( photo >= 0 ) setPhotoRatio(photo.height / photo.width)
+        if (photo >= 0) setPhotoRatio(photo.height / photo.width)
         if (window.innerHeight / window.innerWidth > (photoRatio >= 0 ? photoRatio : photo.height / photo.width)) {
             setOrientationStyle(classes.width)
         } else {
@@ -56,7 +56,7 @@ function Photo() {
                             height={'80px'}
                             chartType="AreaChart"
                             loader={<div>Loading Chart</div>}
-                            options={{legend: 'none', title: `Total likes: ${stats.likes.total}`, backgroundColor: '#666', colors: ['#fff']}}
+                            options={{ legend: 'none', title: `Total likes: ${stats.likes.total}`, backgroundColor: '#666', colors: ['#fff'] }}
                             data={[
                                 ["day", "likes"],
                                 ...stats.likes.historical.values.map(({ date, value }) => ([date, value]))
@@ -67,7 +67,7 @@ function Photo() {
                             height={'80px'}
                             chartType="AreaChart"
                             loader={<div>Loading Chart</div>}
-                            options={{legend: 'none', title: `Total downloads: ${stats.downloads.total}`, backgroundColor: '#666', colors: ['#fff']}}
+                            options={{ legend: 'none', title: `Total downloads: ${stats.downloads.total}`, backgroundColor: '#666', colors: ['#fff'] }}
                             data={[
                                 ["day", "downloads"],
                                 ...stats.downloads.historical.values.map(({ date, value }) => ([date, value]))
@@ -79,7 +79,7 @@ function Photo() {
                             height={'80px'}
                             chartType="AreaChart"
                             loader={<div>Loading Chart</div>}
-                            options={{legend: 'none', title: `Total views: ${stats.views.total}`, backgroundColor: '#666', colors: ['#fff']}}
+                            options={{ legend: 'none', title: `Total views: ${stats.views.total}`, backgroundColor: '#666', colors: ['#fff'] }}
                             data={[
                                 ["day", "views"],
                                 ...stats.views.historical.values.map(({ date, value }) => ([date, value]))
@@ -105,10 +105,10 @@ function Photo() {
                         photo.tags.map((tag, index) => <div key={index}>{tag.title}</div>)
                     }
                 </div>
-                <div className={[classes.descriptionBubble, classes.fbStuff].join(' ')}>
-                    <div className="fb-like" data-href={photoUrl} data-width="" data-layout="button" data-action="like" data-size="large" data-share="false"></div>
-                    <div className="fb-share-button" href={photoUrl} data-layout="button" data-size="large"><a target="_blank" href={photoUrl} className="fb-xfbml-parse-ignore">Share</a></div>
-                </div>
+            </div>
+            <div className={classes.fbStuff}>
+                <div className="fb-like" data-href={photoUrl} data-width="" data-layout="button" data-action="like" data-size="large" data-share="false"></div>
+                <div className="fb-share-button" href={photoUrl} data-layout="button" data-size="large"><a target="_blank" href={photoUrl} className="fb-xfbml-parse-ignore">Share</a></div>
             </div>
         </div>
     )

@@ -2,18 +2,40 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  height: 99vh;
-  overflow-y: auto;
+  height: 100vh;
 
   .options {
     grid-column: 1/4;
-    
+    margin: 1rem auto;
+    font-size: large;
+    select {
+      height: max-content;
+      font-size: inherit;
+      margin: 0 1rem;
+      padding: 0 .5rem;
+      width: max-content;
+      outline: none;
+      border: #666 solid 1px;
+      border-radius: 10px;
+    }
   }
 
   .column {
     display: flex;
     flex-direction: column;
     gap: 10px;
+  }
+
+  .error {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    background-color: crimson;
+    color: white;
+    padding: 2rem 0;
+    font-size: xx-large;
   }
 
   .end {

@@ -21,14 +21,22 @@
 
     .photos {
       display: grid;
-      grid-template-columns: repeat(10, 1fr);
+      @media (max-width: 1199px ) {
+        grid-template-columns: repeat(5, 1fr);
+      }
+      @media (min-width: 1200px ) {
+        grid-template-columns: repeat(10, 1fr);
+      }
       gap: 3px;
-
+      justify-content: space-evenly;
       overflow: hidden;
 
       img {
         margin: 0 auto;
         max-height: 65px;
+        @media (max-width: 1199px ) {
+          max-height: 100px;
+        }
         @media (min-width: 1900px) {
           max-height: 100px;
         }

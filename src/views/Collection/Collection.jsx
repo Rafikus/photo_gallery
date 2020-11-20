@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom';
-import unsplashApi, { getTopic, getTopicsPhotos } from '../../api/unsplashApi'
+import { getTopic, getTopicsPhotos } from '../../api/unsplashApi'
 import { toJson } from 'unsplash-js'
 
 import classes from './Collection.module.scss';
@@ -15,19 +15,23 @@ function Collection() {
     const [currentPage, setCurrentPage] = useState(1)
     const [maxPages, setMaxPages] = useState(1)
     const [sortBy, setSortBy] = useState('latest')
+    const [err, setError] = useState('')
 
     useEffect(() => {
         getTopic(id)
             .then(toJson).then(json => {
                 setMaxPages(Math.ceil(parseInt(json.data.total_photos) / 21));
                 loadNext('latest');
+            }).catch(err => {
+                console.error(err);
+                setError('Cannot connect to the server. Try again later')
             });
     }, [])
 
     const loadNext = (sort) => {
         if (currentPage <= maxPages) {
             setLoading(true);
-            getTopicsPhotos(id, currentPage, 21, sort || sortBy )
+            getTopicsPhotos(id, currentPage, 21, sort || sortBy)
                 .then(toJson)
                 .then(({ data }) => {
                     setFirstColumn([...firstColumn, ...data.filter((_, index) => index % 3 === 0)])
@@ -36,8 +40,8 @@ function Collection() {
                     setCurrentPage(currentPage + 1)
                     setLoading(false);
                 }).catch((err) => {
-                    console.log(err);
-                    setLoading(false);
+                    setError('Cannot connect to the server. Try again later')
+                    console.error(err);
                 });
         }
     }
@@ -56,19 +60,21 @@ function Collection() {
     }
 
     const onScroll = (event) => {
-        const totalHeight = event.target.scrollHeight - window.innerHeight;
-        const currentHeight = event.target.scrollTop;
+        const totalHeight = event.target.scrollingElement.scrollHeight - window.innerHeight;
+        const currentHeight = event.target.scrollingElement.scrollTop;
 
         const percent = currentHeight / totalHeight;
-        if (percent > .9 && !loading) {
+        if (percent > .7 && !loading) {
             loadNext();
         }
     }
 
+    window.onscroll = (event) => onScroll(event);
+
     return (
         <div onScroll={onScroll} className={classes.Collection}>
             <div className={classes.options}>
-                Sort by 
+                Sort by
                 <select onChange={onSortChange}>
                     <option defaultChecked value="latest">latest</option>
                     <option value="popular">popular</option>
@@ -99,7 +105,8 @@ function Collection() {
                     />
                 )}
             </div>
-            {loading ? <div className={classes.loader} /> : null}
+            {loading ? <div className={classes.loader} ></div> : null}
+            {err != '' ? <div className={classes.error} >{err}</div> : null}
             {currentPage > maxPages ?
                 <div className={classes.end}>
                     No more photos to show for this collection <br />
